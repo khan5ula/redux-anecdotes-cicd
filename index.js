@@ -82,6 +82,26 @@ app.post('/api/anecdotes', (request, response) => {
   response.status(200).json(anecdote)
 })
 
+app.put('/api/anecdotes/:id', (request, response) => {
+  const id = request.params.id
+  const updatedAnecdote = request.body
+
+  const updatedAnecdotes = anecdotes.map((anecdote) => {
+    if (anecdote.id === id) {
+      return {
+        ...anecdote,
+        ...updatedAnecdote,
+      }
+    } else {
+      return anecdote
+    }
+  })
+
+  anecdotes = updatedAnecdotes
+
+  response.json(updatedAnecdote)
+})
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
