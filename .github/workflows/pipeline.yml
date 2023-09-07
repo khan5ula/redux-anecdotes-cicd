@@ -32,6 +32,13 @@ jobs:
           command: npm run test:e2e
           start: npm start
           wait-on: http://localhost:3001
+      - name: Build failure
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: Build failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   deploy_to_render:
     name: Deploy to Render
@@ -75,3 +82,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
+      - name: Build failure
+        if: env.SKIP != 'true'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: New version of anecdotes app just got released
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
