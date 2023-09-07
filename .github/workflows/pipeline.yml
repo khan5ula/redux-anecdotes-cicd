@@ -26,12 +26,8 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
-
-  e2e_tests:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: cypress-io/github-action@v5
+      - name: e2e_tests
+        uses: cypress-io/github-action@v5
         with:
           command: npm run test:e2e
           start: npm start
