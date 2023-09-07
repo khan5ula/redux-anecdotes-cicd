@@ -102,6 +102,10 @@ app.put('/api/anecdotes/:id', (request, response) => {
   response.json(updatedAnecdote)
 })
 
+app.get('/health', (req, res) => {
+  res.send('ok')
+})
+
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
