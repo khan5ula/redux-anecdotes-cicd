@@ -9,43 +9,44 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  frontend_deployment:
+  deployment:
     runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: npm install
-
-      - name: Build
-        working-directory: frontend
-        run: npm run build
-
-  backend_deployment:
-    runs-on: ubuntu-20.04
-    needs: frontend_deployment
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install dependencies
+      - name: Install frontend dependencies
+        working-directory: frontend
         run: npm install
+      - name: Install backend dependencies
+        run: npm install
+      - name: Check code styling
+        run: npm run lint
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
 
   e2e_tests:
     runs-on: ubuntu-20.04
-    needs: [frontend_deployment, backend_deployment]
     steps:
       - uses: actions/checkout@v3
       - uses: cypress-io/github-action@v5
         with:
           command: npm run test:e2e
-          start: npm run start-prod
+          start: npm start
           wait-on: http://localhost:3001
+
+  deploy_to_render:
+    name: Deploy to Render
+    runs-on: ubuntu-20.04
+    needs: deployment
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Trigger deployment
+        uses: sws2apps/render-deployment@main #consider using pin for dependabot auto update
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
+          multipleDeployment: false #optional, default true
+
