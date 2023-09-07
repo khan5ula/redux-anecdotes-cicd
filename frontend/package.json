@@ -19,7 +19,6 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start-prod": "node app.js",
     "dev": "vite --host",
     "build": "react-scripts build",
     "test": "react-scripts test",
